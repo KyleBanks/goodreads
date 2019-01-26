@@ -8,12 +8,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"time"
+	"strconv"
 )
 
 const (
 	defaultApiRoot = "https://goodreads.com"
-	defaultTimeout = time.Second * 5
 )
 
 type Client struct {
@@ -21,6 +20,7 @@ type Client struct {
 
 	ApiRoot string
 	Http    *http.Client
+	Verbose bool
 }
 
 // NewClient initializes a Client with default parameters.
@@ -29,10 +29,42 @@ func NewClient(key string) *Client {
 		ApiKey: key,
 
 		ApiRoot: defaultApiRoot,
-		Http: &http.Client{
-			Timeout: defaultTimeout,
-		},
+		Http:    http.DefaultClient,
 	}
+}
+
+// ReviewList returns the books on a members shelf.
+// https://www.goodreads.com/api/index#reviews.list
+func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, perPage int) ([]Review, error) {
+	q := url.Values{}
+	q.Set("id", userID)
+	q.Set("v", "2")
+	if shelf != "" {
+		q.Set("shelf", shelf)
+	}
+	if sort != "" {
+		q.Set("sort", sort)
+	}
+	if search != "" {
+		q.Set("search", search)
+	}
+	if order != "" {
+		q.Set("order", order)
+	}
+	if page > 0 {
+		q.Set("page", strconv.Itoa(page))
+	}
+	if perPage > 0 {
+		q.Set("per_page", strconv.Itoa(perPage))
+	}
+
+	var r struct {
+		Reviews []Review `xml:"reviews>review"`
+	}
+	if err := c.get("review/list", &r, q); err != nil {
+		return nil, err
+	}
+	return r.Reviews, nil
 }
 
 // ShelvesList returns the list of shelves belonging to a user.
@@ -67,7 +99,11 @@ func (c *Client) get(endpoint string, v interface{}, q url.Values) error {
 	}
 	q.Set("key", c.ApiKey)
 
-	res, err := c.Http.Get(fmt.Sprintf("%s/%s?%s", c.ApiRoot, endpoint, q.Encode()))
+	url := fmt.Sprintf("%s/%s?%s", c.ApiRoot, endpoint, q.Encode())
+	if c.Verbose {
+		fmt.Printf("GET %s\n", url)
+	}
+	res, err := c.Http.Get(url)
 	if err != nil {
 		return err
 	} else if res.StatusCode < 200 || res.StatusCode > 299 {

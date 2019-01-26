@@ -1,6 +1,7 @@
 package goodreads
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,6 +12,5 @@ func TestNewClient(t *testing.T) {
 	assert.NotNil(t, c)
 	assert.Equal(t, "api-key", c.ApiKey)
 	assert.Equal(t, defaultApiRoot, c.ApiRoot)
-	assert.NotNil(t, c.Http)
-	assert.Equal(t, defaultTimeout, c.Http.Timeout)
+	assert.Equal(t, http.DefaultClient, c.Http)
 }

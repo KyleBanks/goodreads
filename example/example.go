@@ -20,6 +20,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Loaded user details of %s:\n", u.Name)
-	fmt.Println(u)
+	fmt.Printf("User [%s] %s:\n", u.ID, u.Name)
+	fmt.Printf(" Link: %s\n ImageURL: %s\n LastActive: %s\n", u.Link, u.ImageURL, u.LastActive)
+
+	fmt.Println("\n")
+
+	reviews, err := c.ReviewList(u.ID, "read", "date_read", "", "d", 1, 200)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Reviews:")
+	for i, rev := range reviews {
+		fmt.Printf(" %d. [%d stars, %s] %s\n", i+1, rev.Rating, rev.ReadAt, rev.Book.Title)
+	}
 }
