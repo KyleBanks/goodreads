@@ -12,7 +12,7 @@ Once you have your key, you can initialize a Goodreads client like so:
 package main
 
 import (
-	"os"
+    "os"
     "github.com/KyleBanks/goodreads"
 )
 
@@ -30,7 +30,6 @@ if err != nil {
     panic(err)
 }
 fmt.Printf("Loaded user details of %s:\n", u.Name)
-fmt.Println(u)
 ```
 
 The client function names match those of the Goodreads API documentation. For example, `user.show` is `UserShow` above. To see the full list of supported methods:
