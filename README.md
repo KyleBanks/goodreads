@@ -1,5 +1,10 @@
 # goodreads
 
+[![GoDoc](https://godoc.org/github.com/KyleBanks/goodreads?status.svg)](https://godoc.org/github.com/KyleBanks/goodreads)&nbsp; 
+[![Build Status](https://travis-ci.org/KyleBanks/goodreads.svg?branch=master)](https://travis-ci.org/KyleBanks/goodreads)&nbsp;
+[![Go Report Card](https://goreportcard.com/badge/github.com/KyleBanks/goodreads)](https://goreportcard.com/report/github.com/KyleBanks/goodreads)&nbsp;
+[![Coverage Status](https://coveralls.io/repos/github/KyleBanks/goodreads/badge.svg?branch=master)](https://coveralls.io/github/KyleBanks/goodreads?branch=master)
+
 An unofficial [Goodreads API](https://www.goodreads.com/api/index) client written in Go. 
 
 ## Usage
