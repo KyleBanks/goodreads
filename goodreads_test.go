@@ -1,11 +1,9 @@
 package goodreads
 
 import (
-	"bytes"
-	"encoding/xml"
 	"fmt"
-	"net/url"
-	"reflect"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,14 +19,11 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClient_AuthorBooks(t *testing.T) {
-	c := newTestClient(mockDecoder{
-		expectFn: "author/list/12345",
-		expectQuery: url.Values(map[string][]string{
-			"key":  []string{testApiKey},
-			"page": []string{"1"},
-		}),
-		response: `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/author/list/12345?key=%s&page=1", testApiKey),
+		response:  `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
 	})
+	defer done()
 
 	a, err := c.AuthorBooks("12345", 1)
 	assert.Nil(t, err)
@@ -39,13 +34,11 @@ func TestClient_AuthorBooks(t *testing.T) {
 }
 
 func TestClient_AuthorShow(t *testing.T) {
-	c := newTestClient(mockDecoder{
-		expectFn: "author/show/12345",
-		expectQuery: url.Values(map[string][]string{
-			"key": []string{testApiKey},
-		}),
-		response: `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/author/show/12345?key=%s", testApiKey),
+		response:  `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
 	})
+	defer done()
 
 	a, err := c.AuthorShow("12345")
 	assert.Nil(t, err)
@@ -56,57 +49,86 @@ func TestClient_AuthorShow(t *testing.T) {
 }
 
 func TestClient_ReviewList(t *testing.T) {
-	c := newTestClient(mockDecoder{
-		expectFn: "review/list",
-		expectQuery: url.Values(map[string][]string{
-			"key":      []string{testApiKey},
-			"id":       []string{"user-id"},
-			"v":        []string{"2"},
-			"shelf":    []string{"read"},
-			"sort":     []string{"date_read"},
-			"search":   []string{"search"},
-			"order":    []string{"d"},
-			"page":     []string{"1"},
-			"per_page": []string{"200"},
-		}),
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/review/list?id=user-id&key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testApiKey),
 		response: `<response>
 			<reviews>
-				<review><id>Review1</id><rating>1</rating></review>
-				<review><id>Review2</id><rating>2</rating></review>
-				<review><id>Review3</id><rating>3</rating></review>
+				<review><id>review1</id><rating>1</rating></review>
+				<review><id>review2</id><rating>2</rating></review>
+				<review><id>review3</id><rating>3</rating></review>
 			</reviews>
 		</response>`,
 	})
+	defer done()
 
 	r, err := c.ReviewList("user-id", "read", "date_read", "search", "d", 1, 200)
 	assert.Nil(t, err)
-	assert.Equal(t, 3, len(r))
 	assert.Equal(t, []Review{
-		Review{ID: "Review1", Rating: 1},
-		Review{ID: "Review2", Rating: 2},
-		Review{ID: "Review3", Rating: 3},
+		Review{ID: "review1", Rating: 1},
+		Review{ID: "review2", Rating: 2},
+		Review{ID: "review3", Rating: 3},
 	}, r)
 }
 
-type mockDecoder struct {
-	expectFn    string
-	expectQuery url.Values
-	response    string
+func TestClient_ShelvesList(t *testing.T) {
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/shelves/list?key=%s&user_id=user-id", testApiKey),
+		response: `<response>
+			<shelves>
+				<user_shelf><id>shelf1</id><name>Shelf 1</name></user_shelf>
+				<user_shelf><id>shelf2</id><name>Shelf 2</name></user_shelf>
+				<user_shelf><id>shelf3</id><name>Shelf 3</name></user_shelf>
+			</shelves>
+		</response>`,
+	})
+	defer done()
+
+	s, err := c.ShelvesList("user-id")
+	assert.Nil(t, err)
+	assert.Equal(t, []UserShelf{
+		UserShelf{ID: "shelf1", Name: "Shelf 1"},
+		UserShelf{ID: "shelf2", Name: "Shelf 2"},
+		UserShelf{ID: "shelf3", Name: "Shelf 3"},
+	}, s)
 }
 
-func (m mockDecoder) Decode(fn string, q url.Values, v interface{}) error {
-	if fn != m.expectFn {
-		return fmt.Errorf("Unexpected function; expected=%s, got=%s", m.expectFn, fn)
-	}
-	if !reflect.DeepEqual(q, m.expectQuery) {
-		return fmt.Errorf("Unexpected query; expected=%s, got=%s", m.expectQuery, q)
-	}
-	return xml.NewDecoder(bytes.NewBufferString(m.response)).Decode(v)
+func TestClient_UserShow(t *testing.T) {
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/user/show/user-id.xml?key=%s", testApiKey),
+		response: `<response>
+			<user>
+				<id>user-id</id>
+				<name>User Name</name>
+			</user>
+		</response>`,
+	})
+	defer done()
+
+	u, err := c.UserShow("user-id")
+	assert.Nil(t, err)
+	assert.Equal(t, User{
+		ID:   "user-id",
+		Name: "User Name",
+	}, *u)
 }
 
-func newTestClient(m mockDecoder) *Client {
+type decodeTestCase struct {
+	expectURL string
+	response  string
+}
+
+func newTestClient(t *testing.T, tc decodeTestCase) (*Client, func()) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, tc.expectURL, r.URL.String())
+		w.Write([]byte(tc.response))
+	}))
+
 	return &Client{
-		ApiKey:  testApiKey,
-		Decoder: m,
-	}
+		ApiKey: testApiKey,
+		Decoder: &HttpDecoder{
+			Client:  http.DefaultClient,
+			ApiRoot: s.URL,
+			Verbose: true,
+		},
+	}, s.Close
 }
