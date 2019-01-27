@@ -33,6 +33,35 @@ func NewClient(key string) *Client {
 	}
 }
 
+// AuthorBooks returns a list of books by a particular author.
+// https://www.goodreads.com/api/index#author.books
+func (c *Client) AuthorBooks(authorID string, page int) (*Author, error) {
+	q := url.Values{}
+	if page > 0 {
+		q.Set("page", strconv.Itoa(page))
+	}
+
+	var r struct {
+		Author Author `xml:"author"`
+	}
+	if err := c.get(fmt.Sprintf("author/list/%s", authorID), &r, q); err != nil {
+		return nil, err
+	}
+	return &r.Author, nil
+}
+
+// AuthorShow returns the full details of an author.
+// https://www.goodreads.com/api/index#author.show
+func (c *Client) AuthorShow(authorID string) (*Author, error) {
+	var r struct {
+		Author Author `xml:"author"`
+	}
+	if err := c.get(fmt.Sprintf("author/show/%s", authorID), &r, nil); err != nil {
+		return nil, err
+	}
+	return &r.Author, nil
+}
+
 // ReviewList returns the books on a members shelf.
 // https://www.goodreads.com/api/index#reviews.list
 func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, perPage int) ([]Review, error) {

@@ -5,10 +5,22 @@ type Author struct {
 	Name             string  `xml:"name"`
 	ImageURL         string  `xml:"image_url"`
 	SmallImageURL    string  `xml:"small_image_url"`
+	LargeImageURL    string  `xml:"large_image_url"`
 	Link             string  `xml:"link"`
 	AverageRating    float32 `xml:"average_rating"`
 	RatingsCount     int     `xml:"ratings_count"`
 	TextReviewsCount int     `xml:"text_reviews_count"`
+	FansCount        int     `xml:"fans_count"`
+	AuthorFollowers  int     `xml:"author_followers"`
+	About            string  `xml:"about"`
+	WorksCount       int     `xml:"works_count"`
+	Gender           string  `xml:"gender"`
+	Hometown         string  `xml:"hometown"`
+	BornAt           string  `xml:"born_at"`
+	DiedAt           string  `xml:"died_at"`
+	GoodreadsAuthor  bool    `xml:"goodreads_author"`
+	UserID           string  `xml:"user>user_id"`
+	Books            []Book  `xml:"books>book"`
 }
 
 type Book struct {
