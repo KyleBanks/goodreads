@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-    key := os.GetEnv("API_KEY")	
+    key := os.Getenv("API_KEY")	
     c := goodreads.NewClient(key)
 }
 ```
