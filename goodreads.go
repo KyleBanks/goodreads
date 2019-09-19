@@ -97,7 +97,7 @@ func (c *Client) ShelvesList(userID string) ([]UserShelf, error) {
 	var r struct {
 		Shelves []UserShelf `xml:"shelves>user_shelf"`
 	}
-	err := c.Decoder.Decode("shelves/list", v, &r)
+	err := c.Decoder.Decode("shelf/list.xml", v, &r)
 	if err != nil {
 		return nil, err
 	}
