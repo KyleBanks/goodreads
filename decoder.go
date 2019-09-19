@@ -7,7 +7,7 @@ import (
 	"net/url"
 )
 
-const DefaultApiRoot = "https://goodreads.com"
+const DefaultApiRoot = "https://www.goodreads.com"
 
 var DefaultDecoder Decoder = &HttpDecoder{
 	Client:  http.DefaultClient,
