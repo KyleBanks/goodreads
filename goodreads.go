@@ -58,7 +58,6 @@ func (c *Client) AuthorShow(authorID string) (*Author, error) {
 // https://www.goodreads.com/api/index#reviews.list
 func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, perPage int) ([]Review, error) {
 	v := c.defaultValues()
-	v.Set("id", userID)
 	v.Set("v", "2")
 	if shelf != "" {
 		v.Set("shelf", shelf)
@@ -82,7 +81,7 @@ func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, per
 	var r struct {
 		Reviews []Review `xml:"reviews>review"`
 	}
-	err := c.Decoder.Decode("review/list", v, &r)
+	err := c.Decoder.Decode(fmt.Sprintf("review/list/%s.xml", userID), v, &r)
 	if err != nil {
 		return nil, err
 	}
