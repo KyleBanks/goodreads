@@ -7,11 +7,11 @@ import (
 	"net/url"
 )
 
-const defaultApiRoot = "https://goodreads.com"
+const DefaultApiRoot = "https://goodreads.com"
 
 var DefaultDecoder Decoder = &HttpDecoder{
 	Client:  http.DefaultClient,
-	ApiRoot: defaultApiRoot,
+	ApiRoot: DefaultApiRoot,
 }
 
 // Decode defines a type that can decode a Goodreads API function,
