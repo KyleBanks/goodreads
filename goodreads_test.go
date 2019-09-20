@@ -50,7 +50,7 @@ func TestClient_AuthorShow(t *testing.T) {
 
 func TestClient_ReviewList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/review/list?id=user-id&key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testApiKey),
+		expectURL: fmt.Sprintf("/review/list/user-id.xml?key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testApiKey),
 		response: `<response>
 			<reviews>
 				<review><id>review1</id><rating>1</rating></review>
