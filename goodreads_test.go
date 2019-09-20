@@ -72,7 +72,7 @@ func TestClient_ReviewList(t *testing.T) {
 
 func TestClient_ShelvesList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/shelves/list?key=%s&user_id=user-id", testApiKey),
+		expectURL: fmt.Sprintf("/shelf/list.xml?key=%s&user_id=user-id", testApiKey),
 		response: `<response>
 			<shelves>
 				<user_shelf><id>shelf1</id><name>Shelf 1</name></user_shelf>
