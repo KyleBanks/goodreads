@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 // Client wraps the public Goodreads API.
@@ -52,6 +53,21 @@ func (c *Client) AuthorShow(authorID string) (*Author, error) {
 		return nil, err
 	}
 	return &r.Author, nil
+}
+
+// BookReviewCounts returns the review statistics for a given list of ISBNs.
+// https://www.goodreads.com/api/index#book.review_counts
+func (c *Client) BookReviewCounts(isbns []string) ([]ReviewCounts, error) {
+	v := c.defaultValues()
+	v.Set("isbns", strings.Join(isbns, ","))
+	var r struct {
+		ReviewCounts []ReviewCounts `json:"books"`
+	}
+	err := c.Decoder.Decode("book/review_counts.json", v, &r)
+	if err != nil {
+		return nil, err
+	}
+	return r.ReviewCounts, nil
 }
 
 // ReviewList returns the books on a members shelf.
