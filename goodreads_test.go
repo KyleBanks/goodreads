@@ -15,7 +15,7 @@ func TestNewClient(t *testing.T) {
 	c := NewClient("api-key")
 	assert.NotNil(t, c)
 	assert.Equal(t, "api-key", c.ApiKey)
-	assert.Equal(t, DefaultDecoder, c.Decoder)
+	assert.Equal(t, DefaultAPIClient, c.APIClient)
 }
 
 func TestClient_AuthorBooks(t *testing.T) {
@@ -125,7 +125,7 @@ func newTestClient(t *testing.T, tc decodeTestCase) (*Client, func()) {
 
 	return &Client{
 		ApiKey: testApiKey,
-		Decoder: &HttpDecoder{
+		APIClient: &HTTPClient{
 			Client:  http.DefaultClient,
 			ApiRoot: s.URL,
 			Verbose: true,

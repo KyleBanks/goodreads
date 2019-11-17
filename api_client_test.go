@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHttpDecoder_Decode(t *testing.T) {
+func TestHttpClient_Get(t *testing.T) {
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "/foo/bar?p1=v1&p2=v2", r.URL.String())
 		w.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?><response><id>SampleID</id></response>`))
@@ -22,8 +22,8 @@ func TestHttpDecoder_Decode(t *testing.T) {
 	var res struct {
 		ID string `xml:"id"`
 	}
-	h := HttpDecoder{Client: http.DefaultClient, ApiRoot: s.URL, Verbose: true}
-	err := h.Decode("foo/bar", v, &res)
+	h := HTTPClient{Client: http.DefaultClient, ApiRoot: s.URL, Verbose: true}
+	err := h.Get("foo/bar", v, &res)
 	assert.Nil(t, err)
 	assert.Equal(t, "SampleID", res.ID)
 }
