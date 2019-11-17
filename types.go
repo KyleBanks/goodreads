@@ -60,6 +60,19 @@ type Review struct {
 	Body        string `xml:"body"`
 }
 
+type ReviewCounts struct {
+	ID                   string `json:"id"`
+	ISBN                 string `json:"isbn"`
+	ISBN13               string `json:"isbn13"`
+	RatingsCount         int    `json:"ratings_count"`
+	ReviewsCount         int    `json:"reviews_count"`
+	TextReviewsCount     int    `json:"text_reviews_count"`
+	WorkRatingsCount     int    `json:"work_ratings_count"`
+	WorkReviewsCount     int    `json:"work_reviews_count"`
+	WorkTextReviewsCount int    `json:"work_text_reviews_count"`
+	AverageRating        string `json:"average_rating"`
+}
+
 type User struct {
 	ID            string      `xml:"id"`
 	Name          string      `xml:"name"`
