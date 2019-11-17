@@ -1,6 +1,7 @@
 package goodreads
 
 import (
+	"encoding/xml"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -23,7 +24,7 @@ func TestHttpClient_Get(t *testing.T) {
 		ID string `xml:"id"`
 	}
 	h := HTTPClient{Client: http.DefaultClient, ApiRoot: s.URL, Verbose: true}
-	err := h.Get("foo/bar", v, &res)
+	err := h.Get("foo/bar", xml.Unmarshal, v, &res)
 	assert.Nil(t, err)
 	assert.Equal(t, "SampleID", res.ID)
 }

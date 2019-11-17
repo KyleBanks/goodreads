@@ -1,9 +1,10 @@
-// Package goodreads provides a REST client for the public goodreads.com APIClient.
+// Package goodreads provides a REST client for the public goodreads.com API.
 //
 // https://www.goodreads.com/api
 package goodreads
 
 import (
+	"encoding/xml"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -12,15 +13,15 @@ import (
 
 // Client wraps the public Goodreads API.
 type Client struct {
-	ApiKey    string
-	APIClient APIClient
+	ApiKey     string
+	HTTPClient APIClient
 }
 
 // NewClient initializes a Client with default parameters.
 func NewClient(key string) *Client {
 	return &Client{
-		ApiKey:    key,
-		APIClient: DefaultAPIClient,
+		ApiKey:     key,
+		HTTPClient: DefaultAPIClient,
 	}
 }
 
@@ -35,7 +36,7 @@ func (c *Client) AuthorBooks(authorID string, page int) (*Author, error) {
 	var r struct {
 		Author Author `xml:"author"`
 	}
-	err := c.APIClient.Get(fmt.Sprintf("author/list/%s", authorID), v, &r)
+	err := c.HTTPClient.Get(fmt.Sprintf("author/list/%s", authorID), xml.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +49,7 @@ func (c *Client) AuthorShow(authorID string) (*Author, error) {
 	var r struct {
 		Author Author `xml:"author"`
 	}
-	err := c.APIClient.Get(fmt.Sprintf("author/show/%s", authorID), c.defaultValues(), &r)
+	err := c.HTTPClient.Get(fmt.Sprintf("author/show/%s", authorID), xml.Unmarshal, c.defaultValues(), &r)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +64,7 @@ func (c *Client) BookReviewCounts(isbns []string) ([]ReviewCounts, error) {
 	var r struct {
 		ReviewCounts []ReviewCounts `json:"books"`
 	}
-	err := c.APIClient.Get("book/review_counts.json", v, &r)
+	err := c.HTTPClient.Get("book/review_counts.json", xml.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +98,7 @@ func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, per
 	var r struct {
 		Reviews []Review `xml:"reviews>review"`
 	}
-	err := c.APIClient.Get(fmt.Sprintf("review/list/%s.xml", userID), v, &r)
+	err := c.HTTPClient.Get(fmt.Sprintf("review/list/%s.xml", userID), xml.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +113,7 @@ func (c *Client) ShelvesList(userID string) ([]UserShelf, error) {
 	var r struct {
 		Shelves []UserShelf `xml:"shelves>user_shelf"`
 	}
-	err := c.APIClient.Get("shelf/list.xml", v, &r)
+	err := c.HTTPClient.Get("shelf/list.xml", xml.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +126,7 @@ func (c *Client) UserShow(id string) (*User, error) {
 	var r struct {
 		User User `xml:"user"`
 	}
-	err := c.APIClient.Get(fmt.Sprintf("user/show/%s.xml", id), c.defaultValues(), &r)
+	err := c.HTTPClient.Get(fmt.Sprintf("user/show/%s.xml", id), xml.Unmarshal, c.defaultValues(), &r)
 	if err != nil {
 		return nil, err
 	}
