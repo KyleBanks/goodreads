@@ -38,16 +38,17 @@ func (h *HTTPClient) Get(endpoint string, decoder func([]byte, interface{}) erro
 		return err
 	}
 
+	defer res.Body.Close()
+
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(res.Body)
 	if err != nil {
 		return err
 	}
 
-	defer res.Body.Close()
-
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		return fmt.Errorf("unexpected response code: %d", res.StatusCode)
 	}
+
 	return decoder(buf.Bytes(), v)
 }

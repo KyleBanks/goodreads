@@ -61,7 +61,7 @@ type Review struct {
 }
 
 type ReviewCounts struct {
-	ID                   string `json:"id"`
+	ID                   int    `json:"id"`
 	ISBN                 string `json:"isbn"`
 	ISBN13               string `json:"isbn13"`
 	RatingsCount         int    `json:"ratings_count"`

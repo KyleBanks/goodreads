@@ -4,6 +4,7 @@
 package goodreads
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"net/url"
@@ -14,14 +15,14 @@ import (
 // Client wraps the public Goodreads API.
 type Client struct {
 	ApiKey     string
-	HTTPClient APIClient
+	httpClient APIClient
 }
 
 // NewClient initializes a Client with default parameters.
 func NewClient(key string) *Client {
 	return &Client{
 		ApiKey:     key,
-		HTTPClient: DefaultAPIClient,
+		httpClient: DefaultAPIClient,
 	}
 }
 
@@ -36,7 +37,7 @@ func (c *Client) AuthorBooks(authorID string, page int) (*Author, error) {
 	var r struct {
 		Author Author `xml:"author"`
 	}
-	err := c.HTTPClient.Get(fmt.Sprintf("author/list/%s", authorID), xml.Unmarshal, v, &r)
+	err := c.httpClient.Get(fmt.Sprintf("author/list/%s", authorID), xml.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,7 @@ func (c *Client) AuthorShow(authorID string) (*Author, error) {
 	var r struct {
 		Author Author `xml:"author"`
 	}
-	err := c.HTTPClient.Get(fmt.Sprintf("author/show/%s", authorID), xml.Unmarshal, c.defaultValues(), &r)
+	err := c.httpClient.Get(fmt.Sprintf("author/show/%s", authorID), xml.Unmarshal, c.defaultValues(), &r)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +65,7 @@ func (c *Client) BookReviewCounts(isbns []string) ([]ReviewCounts, error) {
 	var r struct {
 		ReviewCounts []ReviewCounts `json:"books"`
 	}
-	err := c.HTTPClient.Get("book/review_counts.json", xml.Unmarshal, v, &r)
+	err := c.httpClient.Get("book/review_counts.json", json.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +99,7 @@ func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, per
 	var r struct {
 		Reviews []Review `xml:"reviews>review"`
 	}
-	err := c.HTTPClient.Get(fmt.Sprintf("review/list/%s.xml", userID), xml.Unmarshal, v, &r)
+	err := c.httpClient.Get(fmt.Sprintf("review/list/%s.xml", userID), xml.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +114,7 @@ func (c *Client) ShelvesList(userID string) ([]UserShelf, error) {
 	var r struct {
 		Shelves []UserShelf `xml:"shelves>user_shelf"`
 	}
-	err := c.HTTPClient.Get("shelf/list.xml", xml.Unmarshal, v, &r)
+	err := c.httpClient.Get("shelf/list.xml", xml.Unmarshal, v, &r)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +127,7 @@ func (c *Client) UserShow(id string) (*User, error) {
 	var r struct {
 		User User `xml:"user"`
 	}
-	err := c.HTTPClient.Get(fmt.Sprintf("user/show/%s.xml", id), xml.Unmarshal, c.defaultValues(), &r)
+	err := c.httpClient.Get(fmt.Sprintf("user/show/%s.xml", id), xml.Unmarshal, c.defaultValues(), &r)
 	if err != nil {
 		return nil, err
 	}

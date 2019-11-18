@@ -15,7 +15,7 @@ func TestNewClient(t *testing.T) {
 	c := NewClient("api-key")
 	assert.NotNil(t, c)
 	assert.Equal(t, "api-key", c.ApiKey)
-	assert.Equal(t, DefaultAPIClient, c.HTTPClient)
+	assert.Equal(t, DefaultAPIClient, c.httpClient)
 }
 
 func TestClient_AuthorBooks(t *testing.T) {
@@ -48,6 +48,45 @@ func TestClient_AuthorShow(t *testing.T) {
 	}, *a)
 }
 
+func TestClient_BookReviewCounts(t *testing.T) {
+	isbn := "9781400078776"
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/book/review_counts.json?isbns=%s&key=%s", isbn, testApiKey),
+		response: `{
+			"books": [{
+				"average_rating": "3.82",
+				"id": 15,
+				"isbn": "1400078776",
+				"isbn13": "9781400078776",
+				"ratings_count": 1,
+				"reviews_count": 2,
+				"text_reviews_count": 3,
+				"work_ratings_count": 4,
+				"work_reviews_count": 5,
+				"work_text_reviews_count": 6
+			}]
+		}`,
+	})
+	defer done()
+
+	counts, err := c.BookReviewCounts([]string{isbn})
+	assert.Nil(t, err)
+	assert.Equal(t, []ReviewCounts{
+		{
+			ID:                   15,
+			ISBN:                 "1400078776",
+			ISBN13:               "9781400078776",
+			RatingsCount:         1,
+			ReviewsCount:         2,
+			TextReviewsCount:     3,
+			WorkRatingsCount:     4,
+			WorkReviewsCount:     5,
+			WorkTextReviewsCount: 6,
+			AverageRating:        "3.82",
+		},
+	}, counts)
+}
+
 func TestClient_ReviewList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
 		expectURL: fmt.Sprintf("/review/list/user-id.xml?key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testApiKey),
@@ -64,9 +103,9 @@ func TestClient_ReviewList(t *testing.T) {
 	r, err := c.ReviewList("user-id", "read", "date_read", "search", "d", 1, 200)
 	assert.Nil(t, err)
 	assert.Equal(t, []Review{
-		Review{ID: "review1", Rating: 1},
-		Review{ID: "review2", Rating: 2},
-		Review{ID: "review3", Rating: 3},
+		{ID: "review1", Rating: 1},
+		{ID: "review2", Rating: 2},
+		{ID: "review3", Rating: 3},
 	}, r)
 }
 
@@ -86,9 +125,9 @@ func TestClient_ShelvesList(t *testing.T) {
 	s, err := c.ShelvesList("user-id")
 	assert.Nil(t, err)
 	assert.Equal(t, []UserShelf{
-		UserShelf{ID: "shelf1", Name: "Shelf 1"},
-		UserShelf{ID: "shelf2", Name: "Shelf 2"},
-		UserShelf{ID: "shelf3", Name: "Shelf 3"},
+		{ID: "shelf1", Name: "Shelf 1"},
+		{ID: "shelf2", Name: "Shelf 2"},
+		{ID: "shelf3", Name: "Shelf 3"},
 	}, s)
 }
 
@@ -120,12 +159,12 @@ type decodeTestCase struct {
 func newTestClient(t *testing.T, tc decodeTestCase) (*Client, func()) {
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, tc.expectURL, r.URL.String())
-		w.Write([]byte(tc.response))
+		_, _ = w.Write([]byte(tc.response))
 	}))
 
 	return &Client{
 		ApiKey: testApiKey,
-		HTTPClient: &HTTPClient{
+		httpClient: &HTTPClient{
 			Client:  http.DefaultClient,
 			ApiRoot: s.URL,
 			Verbose: true,
