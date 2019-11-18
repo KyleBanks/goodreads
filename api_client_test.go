@@ -34,7 +34,7 @@ func TestHttpClient_Get(t *testing.T) {
 			v.Set("p1", "v1")
 			v.Set("p2", "v2")
 			var res struct {
-				ID string `xml:"id"`
+				ID string `xml:"id" json:"id"`
 			}
 			h := HTTPClient{Client: http.DefaultClient, ApiRoot: s.URL, Verbose: true}
 			err := h.Get("foo/bar", tc.Decoder, v, &res)
