@@ -60,6 +60,8 @@ type Review struct {
 	Body        string `xml:"body"`
 }
 
+// ReviewCounts defines the review statistics from the book.review_counts
+// method in the Goodreads API.
 type ReviewCounts struct {
 	ID                   int    `json:"id"`
 	ISBN                 string `json:"isbn"`
