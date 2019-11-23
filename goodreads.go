@@ -106,6 +106,14 @@ func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, per
 	return r.Reviews, nil
 }
 
+// SearchBooks returns a list of books based on a query string
+// by title, author, or ISBN.
+// https://www.goodreads.com/api/index#search.books
+func (c *Client) SearchBooks(query string, page int, field SearchField) ([]Book, error) {
+	return nil, nil
+}
+
+
 // ShelvesList returns the list of shelves belonging to a user.
 // https://www.goodreads.com/api/index#shelves.list
 func (c *Client) ShelvesList(userID string) ([]UserShelf, error) {
