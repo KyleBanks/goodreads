@@ -112,22 +112,58 @@ func TestClient_ReviewList(t *testing.T) {
 func TestClient_SearchBooks(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
 		expectURL: fmt.Sprintf("/search/index.xml?key=%s&q=hello&page=1&search[field]=all", testApiKey),
-		// TODO: take a look at what the response type looks like and add fields
 		response: `<response>
-			<books>
-				<user_book><id>book1</id><name>Book 1</name></user_book>
-				<user_book><id>book2</id><name>Book 2</name></user_book>
-				<user_book><id>book3</id><name>Book 3</name></user_book>
-			</books>
-		</response>`,
-	})
+		<search>
+		  <results>
+			<work>
+			  <id type="integer">1</id>
+			  <books_count type="integer">2</books_count>
+			  <ratings_count type="integer">3</ratings_count>
+			  <text_reviews_count type="integer">4</text_reviews_count>
+			  <original_publication_year type="integer">2019</original_publication_year>
+			  <original_publication_month type="integer">8</original_publication_month>
+			  <original_publication_day type="integer">6</original_publication_day>
+			  <average_rating>3.59</average_rating>
+			  <best_book type="Book">
+				<id type="integer">1</id>
+				<title>book1</title>
+				<author>
+				  <id type="integer">1</id>
+				  <name>Author 1</name>
+				</author>
+				<image_url>https://image1.jpg</image_url>
+				<small_image_url>https://small_image1.jpg</small_image_url>
+			  </best_book>
+			</work>
+			<work>
+			  <id type="integer">5</id>
+			  <books_count type="integer">6</books_count>
+			  <ratings_count type="integer">7</ratings_count>
+			  <text_reviews_count type="integer">8</text_reviews_count>
+			  <original_publication_year type="integer">2018</original_publication_year>
+			  <original_publication_month type="integer" nil="true" />
+			  <original_publication_day type="integer" nil="true" />
+			  <average_rating>3.68</average_rating>
+			  <best_book type="Book">
+				<id type="integer">2</id>
+				<title>Hello The Sequel</title>
+				<author>
+				  <id type="integer">2</id>
+				  <name>Author 2</name>
+				</author>
+				<image_url>https://image2.jpg</image_url>
+				<small_image_url>https://small_image2.jpg</small_image_url>
+			  </best_book>
+			</work>
+		  </results>
+		</search>
+	</response>`,})
 	defer done()
 	books, err := c.SearchBooks("hello", 0, AllFields)
 	assert.Nil(t, err)
 	assert.Equal(t, []Book{
 		{ID: "book1", Title: "Book 1"},
 		{ID: "book2", Title: "Book 2"},
-		{ID: "book3", Title: "Book 3"},
 	}, books)
 }
 
