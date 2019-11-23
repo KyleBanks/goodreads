@@ -9,21 +9,21 @@ type Author struct {
 	Link             string  `xml:"link"`
 	AverageRating    float32 `xml:"average_rating"`
 	RatingsCount     int     `xml:"ratings_count"`
-	TextReviewsCount int     `xml:"text_reviews_count"`
-	FansCount        int     `xml:"fans_count"`
-	AuthorFollowers  int     `xml:"author_followers"`
-	About            string  `xml:"about"`
-	WorksCount       int     `xml:"works_count"`
-	Gender           string  `xml:"gender"`
-	Hometown         string  `xml:"hometown"`
-	BornAt           string  `xml:"born_at"`
-	DiedAt           string  `xml:"died_at"`
-	GoodreadsAuthor  bool    `xml:"goodreads_author"`
-	UserID           string  `xml:"user>user_id"`
-	Books            []Book  `xml:"books>book"`
+	TextReviewsCount int          `xml:"text_reviews_count"`
+	FansCount        int          `xml:"fans_count"`
+	AuthorFollowers  int          `xml:"author_followers"`
+	About            string       `xml:"about"`
+	WorksCount       int          `xml:"works_count"`
+	Gender           string       `xml:"gender"`
+	Hometown         string       `xml:"hometown"`
+	BornAt           string       `xml:"born_at"`
+	DiedAt           string       `xml:"died_at"`
+	GoodreadsAuthor  bool         `xml:"goodreads_author"`
+	UserID           string       `xml:"user>user_id"`
+	Books            []AuthorBook `xml:"books>book"`
 }
 
-type Book struct {
+type AuthorBook struct {
 	ID                 string   `xml:"id"`
 	ISBN               string   `xml:"isbn"`
 	ISBN13             string   `xml:"isbn13"`
@@ -49,15 +49,15 @@ type Book struct {
 }
 
 type Review struct {
-	ID          string `xml:"id"`
-	Book        Book   `xml:"book"`
-	Rating      int    `xml:"rating"`
-	StartedAt   string `xml:"started_at"`
-	ReadAt      string `xml:"read_at"`
-	DateAdded   string `xml:"date_added"`
-	DateUpdated string `xml:"date_updated"`
-	ReadCount   int    `xml:"read_count"`
-	Body        string `xml:"body"`
+	ID          string     `xml:"id"`
+	Book        AuthorBook `xml:"book"`
+	Rating      int        `xml:"rating"`
+	StartedAt   string     `xml:"started_at"`
+	ReadAt      string     `xml:"read_at"`
+	DateAdded   string     `xml:"date_added"`
+	DateUpdated string     `xml:"date_updated"`
+	ReadCount   int        `xml:"read_count"`
+	Body        string     `xml:"body"`
 }
 
 // ReviewCounts defines the review statistics from the book.review_counts
@@ -99,4 +99,29 @@ type UserShelf struct {
 	BookCount     string `xml:"book_count"`
 	ExclusiveFlag bool   `xml:"exclusive_flag"`
 	Description   string `xml:"description"`
+}
+
+type Work struct {
+	ID int
+	BooksCount int
+	RatingsCount int
+	TextReviewsCount int
+	OriginalPublicationYear int
+	OriginalPublicationMonth int
+	OriginalPublicationDay int
+	AverageRating float64
+	BestBook WorkBook
+}
+
+type WorkBook struct {
+	ID int
+	Title int
+	Author WorkBookAuthor
+	ImageURL string
+	SmallImageURL string
+}
+
+type WorkBookAuthor struct {
+	ID int
+	Name string
 }

@@ -109,7 +109,7 @@ func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, per
 // SearchBooks returns a list of books based on a query string
 // by title, author, or ISBN.
 // https://www.goodreads.com/api/index#search.books
-func (c *Client) SearchBooks(query string, page int, field SearchField) ([]Book, error) {
+func (c *Client) SearchBooks(query string, page int, field SearchField) ([]Work, error) {
 	v := c.defaultValues()
 	v.Set("q", query)
 	//v.Set("field", string(field))
@@ -118,7 +118,7 @@ func (c *Client) SearchBooks(query string, page int, field SearchField) ([]Book,
 	}
 
 	var r struct {
-		Books []Book `xml:"search>results"`
+		Works []Work `xml:"search>results"`
 	}
 
 	err := c.httpClient.Get("search/index.xml", xml.Unmarshal, v, &r)
@@ -126,7 +126,7 @@ func (c *Client) SearchBooks(query string, page int, field SearchField) ([]Book,
 		return nil, err
 	}
 
-	return r.Books, nil
+	return r.Works, nil
 }
 
 // ShelvesList returns the list of shelves belonging to a user.

@@ -161,9 +161,15 @@ func TestClient_SearchBooks(t *testing.T) {
 	defer done()
 	books, err := c.SearchBooks("hello", 0, AllFields)
 	assert.Nil(t, err)
-	assert.Equal(t, []Book{
-		{ID: "book1", Title: "Book 1"},
-		{ID: "book2", Title: "Book 2"},
+	assert.Equal(t, []Work{
+		{
+			ID: 1,
+			BestBook: WorkBook{ID: 1,},
+		},
+		{
+			ID: 2,
+			BestBook: WorkBook{ID: 2,},
+		},
 	}, books)
 }
 
