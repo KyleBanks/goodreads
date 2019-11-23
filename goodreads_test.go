@@ -109,6 +109,28 @@ func TestClient_ReviewList(t *testing.T) {
 	}, r)
 }
 
+func TestClient_SearchBooks(t *testing.T) {
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/search/index.xml?key=%s&q=hello&page=1&search[field]=all", testApiKey),
+		// TODO: take a look at what the response type looks like and add fields
+		response: `<response>
+			<books>
+				<user_book><id>book1</id><name>Book 1</name></user_book>
+				<user_book><id>book2</id><name>Book 2</name></user_book>
+				<user_book><id>book3</id><name>Book 3</name></user_book>
+			</books>
+		</response>`,
+	})
+	defer done()
+	books, err := c.SearchBooks("hello", 0, AllFields)
+	assert.Nil(t, err)
+	assert.Equal(t, []Book{
+		{ID: "book1", Title: "Book 1"},
+		{ID: "book2", Title: "Book 2"},
+		{ID: "book3", Title: "Book 3"},
+	}, books)
+}
+
 func TestClient_ShelvesList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
 		expectURL: fmt.Sprintf("/shelf/list.xml?key=%s&user_id=user-id", testApiKey),
