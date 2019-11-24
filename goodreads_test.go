@@ -2,6 +2,8 @@ package goodreads
 
 import (
 	"fmt"
+	"github.com/KyleBanks/goodreads/responses"
+	"github.com/KyleBanks/goodreads/responses/work"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +29,7 @@ func TestClient_AuthorBooks(t *testing.T) {
 
 	a, err := c.AuthorBooks("12345", 1)
 	assert.Nil(t, err)
-	assert.Equal(t, Author{
+	assert.Equal(t, responses.Author{
 		ID:   "AuthorID",
 		Name: "AuthorName",
 	}, *a)
@@ -42,7 +44,7 @@ func TestClient_AuthorShow(t *testing.T) {
 
 	a, err := c.AuthorShow("12345")
 	assert.Nil(t, err)
-	assert.Equal(t, Author{
+	assert.Equal(t, responses.Author{
 		ID:   "AuthorID",
 		Name: "AuthorName",
 	}, *a)
@@ -71,7 +73,7 @@ func TestClient_BookReviewCounts(t *testing.T) {
 
 	counts, err := c.BookReviewCounts([]string{isbn})
 	assert.Nil(t, err)
-	assert.Equal(t, []ReviewCounts{
+	assert.Equal(t, []responses.ReviewCounts{
 		{
 			ID:                   15,
 			ISBN:                 "1400078776",
@@ -102,7 +104,7 @@ func TestClient_ReviewList(t *testing.T) {
 
 	r, err := c.ReviewList("user-id", "read", "date_read", "search", "d", 1, 200)
 	assert.Nil(t, err)
-	assert.Equal(t, []Review{
+	assert.Equal(t, []responses.Review{
 		{ID: "review1", Rating: 1},
 		{ID: "review2", Rating: 2},
 		{ID: "review3", Rating: 3},
@@ -161,7 +163,7 @@ func TestClient_SearchBooks(t *testing.T) {
 	defer done()
 	books, err := c.SearchBooks("hello", 1, AllFields)
 	assert.Nil(t, err)
-	assert.Equal(t, []Work{
+	assert.Equal(t, []work.Work{
 		{
 			ID: 1,
 			BooksCount: 2,
@@ -171,10 +173,10 @@ func TestClient_SearchBooks(t *testing.T) {
 			OriginalPublicationMonth: 8,
 			OriginalPublicationDay: 6,
 			AverageRating: 3.59,
-			BestBook: WorkBook{
+			BestBook: work.Book{
 				ID: 1,
 				Title: "book1",
-				Author: WorkBookAuthor{
+				Author: work.Author{
 					ID:   1,
 					Name: "Author 1",
 				},
@@ -191,10 +193,10 @@ func TestClient_SearchBooks(t *testing.T) {
 			OriginalPublicationMonth: 0,
 			OriginalPublicationDay: 0,
 			AverageRating: 3.68,
-			BestBook: WorkBook{
+			BestBook: work.Book{
 				ID: 2,
 				Title: "Hello: The Sequel",
-				Author: WorkBookAuthor{
+				Author: work.Author{
 					ID: 2,
 					Name: "Author 2",
 				},
@@ -220,7 +222,7 @@ func TestClient_ShelvesList(t *testing.T) {
 
 	s, err := c.ShelvesList("user-id")
 	assert.Nil(t, err)
-	assert.Equal(t, []UserShelf{
+	assert.Equal(t, []responses.UserShelf{
 		{ID: "shelf1", Name: "Shelf 1"},
 		{ID: "shelf2", Name: "Shelf 2"},
 		{ID: "shelf3", Name: "Shelf 3"},
@@ -241,7 +243,7 @@ func TestClient_UserShow(t *testing.T) {
 
 	u, err := c.UserShow("user-id")
 	assert.Nil(t, err)
-	assert.Equal(t, User{
+	assert.Equal(t, responses.User{
 		ID:   "user-id",
 		Name: "User Name",
 	}, *u)
