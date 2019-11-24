@@ -111,7 +111,7 @@ func TestClient_ReviewList(t *testing.T) {
 
 func TestClient_SearchBooks(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/search/index.xml?key=%s&q=hello&page=1&search[field]=all", testApiKey),
+		expectURL: fmt.Sprintf("/search/index.xml?key=%s&page=1&q=hello&search%%5Bfield%%5D=all", testApiKey),
 		response: `<response>
 		<search>
 		  <results>
@@ -135,31 +135,31 @@ func TestClient_SearchBooks(t *testing.T) {
 				<small_image_url>https://small_image1.jpg</small_image_url>
 			  </best_book>
 			</work>
-<!--			<work>-->
-<!--			  <id type="integer">5</id>-->
-<!--			  <books_count type="integer">6</books_count>-->
-<!--			  <ratings_count type="integer">7</ratings_count>-->
-<!--			  <text_reviews_count type="integer">8</text_reviews_count>-->
-<!--			  <original_publication_year type="integer">2018</original_publication_year>-->
-<!--			  <original_publication_month type="integer" nil="true" />-->
-<!--			  <original_publication_day type="integer" nil="true" />-->
-<!--			  <average_rating>3.68</average_rating>-->
-<!--			  <best_book type="Book">-->
-<!--				<id type="integer">2</id>-->
-<!--				<title>Hello The Sequel</title>-->
-<!--				<author>-->
-<!--				  <id type="integer">2</id>-->
-<!--				  <name>Author 2</name>-->
-<!--				</author>-->
-<!--				<image_url>https://image2.jpg</image_url>-->
-<!--				<small_image_url>https://small_image2.jpg</small_image_url>-->
-<!--			  </best_book>-->
-<!--			</work>-->
+			<work>
+			  <id type="integer">5</id>
+			  <books_count type="integer">6</books_count>
+			  <ratings_count type="integer">7</ratings_count>
+			  <text_reviews_count type="integer">8</text_reviews_count>
+			  <original_publication_year type="integer">2018</original_publication_year>
+			  <original_publication_month type="integer" nil="true" />
+			  <original_publication_day type="integer" nil="true" />
+			  <average_rating>3.68</average_rating>
+			  <best_book type="Book">
+				<id type="integer">2</id>
+				<title>Hello: The Sequel</title>
+				<author>
+				  <id type="integer">2</id>
+				  <name>Author 2</name>
+				</author>
+				<image_url>https://image2.jpg</image_url>
+				<small_image_url>https://small_image2.jpg</small_image_url>
+			  </best_book>
+			</work>
 		  </results>
 		</search>
 	</response>`,})
 	defer done()
-	books, err := c.SearchBooks("hello", 0, AllFields)
+	books, err := c.SearchBooks("hello", 1, AllFields)
 	assert.Nil(t, err)
 	assert.Equal(t, []Work{
 		{
@@ -182,10 +182,26 @@ func TestClient_SearchBooks(t *testing.T) {
 				SmallImageURL: "https://small_image1.jpg",
 			},
 		},
-		//{
-		//	ID: 2,
-		//	BestBook: WorkBook{ID: 2,},
-		//},
+		{
+			ID: 5,
+			BooksCount: 6,
+			RatingsCount: 7,
+			TextReviewsCount: 8,
+			OriginalPublicationYear: 2018,
+			OriginalPublicationMonth: 0,
+			OriginalPublicationDay: 0,
+			AverageRating: 3.68,
+			BestBook: WorkBook{
+				ID: 2,
+				Title: "Hello: The Sequel",
+				Author: WorkBookAuthor{
+					ID: 2,
+					Name: "Author 2",
+				},
+				ImageURL: "https://image2.jpg",
+				SmallImageURL: "https://small_image2.jpg",
+			},
+		},
 	}, books)
 }
 

@@ -112,7 +112,7 @@ func (c *Client) ReviewList(userID, shelf, sort, search, order string, page, per
 func (c *Client) SearchBooks(query string, page int, field SearchField) ([]Work, error) {
 	v := c.defaultValues()
 	v.Set("q", query)
-	//v.Set("field", string(field))
+	v.Set("search[field]", string(field))
 	if page != 0 {
 		v.Set("page", strconv.Itoa(page))
 	}
