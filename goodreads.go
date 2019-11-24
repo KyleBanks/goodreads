@@ -118,7 +118,7 @@ func (c *Client) SearchBooks(query string, page int, field SearchField) ([]Work,
 	}
 
 	var r struct {
-		Works []Work `xml:"search>results"`
+		Works []Work `xml:"search>results>work"`
 	}
 
 	err := c.httpClient.Get("search/index.xml", xml.Unmarshal, v, &r)

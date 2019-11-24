@@ -166,12 +166,14 @@ func TestClient_SearchBooks(t *testing.T) {
 			ID: 1,
 			BooksCount: 2,
 			RatingsCount: 3,
+			TextReviewsCount: 4,
 			OriginalPublicationYear: 2019,
 			OriginalPublicationMonth: 8,
 			OriginalPublicationDay: 6,
 			AverageRating: 3.59,
 			BestBook: WorkBook{
 				ID: 1,
+				Title: "book1",
 				Author: WorkBookAuthor{
 					ID:   1,
 					Name: "Author 1",

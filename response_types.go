@@ -102,26 +102,26 @@ type UserShelf struct {
 }
 
 type Work struct {
-	ID                       int `xml:"id"`
-	BooksCount               int
-	RatingsCount             int
-	TextReviewsCount         int
-	OriginalPublicationYear  int
-	OriginalPublicationMonth int
-	OriginalPublicationDay   int
-	AverageRating            float64
-	BestBook                 WorkBook
+	ID                       int      `xml:"id"`
+	BooksCount               int      `xml:"books_count"`
+	RatingsCount             int      `xml:"ratings_count"`
+	TextReviewsCount         int      `xml:"text_reviews_count"`
+	OriginalPublicationYear  int      `xml:"original_publication_year"`
+	OriginalPublicationMonth int      `xml:"original_publication_month"`
+	OriginalPublicationDay   int      `xml:"original_publication_day"`
+	AverageRating            float64  `xml:"average_rating"`
+	BestBook                 WorkBook `xml:"best_book"`
 }
 
 type WorkBook struct {
-	ID            int
-	Title         int
-	Author        WorkBookAuthor
-	ImageURL      string
-	SmallImageURL string
+	ID            int            `xml:"id"`
+	Title         string         `xml:"title"`
+	Author        WorkBookAuthor `xml:"author"`
+	ImageURL      string         `xml:"image_url"`
+	SmallImageURL string         `xml:"small_image_url"`
 }
 
 type WorkBookAuthor struct {
-	ID   int
-	Name string
+	ID   int    `xml:"id"`
+	Name string `xml:"name"`
 }
