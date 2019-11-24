@@ -2,6 +2,8 @@ package goodreads
 
 import (
 	"fmt"
+	"github.com/KyleBanks/goodreads/responses"
+	"github.com/KyleBanks/goodreads/responses/work"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,25 +11,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const testApiKey = "test-api-key"
+const testAPIKey = "test-api-key"
 
 func TestNewClient(t *testing.T) {
 	c := NewClient("api-key")
 	assert.NotNil(t, c)
-	assert.Equal(t, "api-key", c.ApiKey)
-	assert.Equal(t, DefaultAPIClient, c.httpClient)
+	assert.Equal(t, "api-key", c.APIKey)
+	assert.Equal(t, defaultAPIClient, c.httpClient)
 }
 
 func TestClient_AuthorBooks(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/author/list/12345?key=%s&page=1", testApiKey),
+		expectURL: fmt.Sprintf("/author/list/12345?key=%s&page=1", testAPIKey),
 		response:  `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
 	})
 	defer done()
 
 	a, err := c.AuthorBooks("12345", 1)
 	assert.Nil(t, err)
-	assert.Equal(t, Author{
+	assert.Equal(t, responses.Author{
 		ID:   "AuthorID",
 		Name: "AuthorName",
 	}, *a)
@@ -35,14 +37,14 @@ func TestClient_AuthorBooks(t *testing.T) {
 
 func TestClient_AuthorShow(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/author/show/12345?key=%s", testApiKey),
+		expectURL: fmt.Sprintf("/author/show/12345?key=%s", testAPIKey),
 		response:  `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
 	})
 	defer done()
 
 	a, err := c.AuthorShow("12345")
 	assert.Nil(t, err)
-	assert.Equal(t, Author{
+	assert.Equal(t, responses.Author{
 		ID:   "AuthorID",
 		Name: "AuthorName",
 	}, *a)
@@ -51,7 +53,7 @@ func TestClient_AuthorShow(t *testing.T) {
 func TestClient_BookReviewCounts(t *testing.T) {
 	isbn := "9781400078776"
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/book/review_counts.json?isbns=%s&key=%s", isbn, testApiKey),
+		expectURL: fmt.Sprintf("/book/review_counts.json?isbns=%s&key=%s", isbn, testAPIKey),
 		response: `{
 			"books": [{
 				"average_rating": "3.82",
@@ -71,7 +73,7 @@ func TestClient_BookReviewCounts(t *testing.T) {
 
 	counts, err := c.BookReviewCounts([]string{isbn})
 	assert.Nil(t, err)
-	assert.Equal(t, []ReviewCounts{
+	assert.Equal(t, []responses.ReviewCounts{
 		{
 			ID:                   15,
 			ISBN:                 "1400078776",
@@ -89,7 +91,7 @@ func TestClient_BookReviewCounts(t *testing.T) {
 
 func TestClient_ReviewList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/review/list/user-id.xml?key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testApiKey),
+		expectURL: fmt.Sprintf("/review/list/user-id.xml?key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testAPIKey),
 		response: `<response>
 			<reviews>
 				<review><id>review1</id><rating>1</rating></review>
@@ -102,16 +104,112 @@ func TestClient_ReviewList(t *testing.T) {
 
 	r, err := c.ReviewList("user-id", "read", "date_read", "search", "d", 1, 200)
 	assert.Nil(t, err)
-	assert.Equal(t, []Review{
+	assert.Equal(t, []responses.Review{
 		{ID: "review1", Rating: 1},
 		{ID: "review2", Rating: 2},
 		{ID: "review3", Rating: 3},
 	}, r)
 }
 
+func TestClient_SearchBooks(t *testing.T) {
+	c, done := newTestClient(t, decodeTestCase{
+		expectURL: fmt.Sprintf("/search/index.xml?key=%s&page=1&q=hello&search%%5Bfield%%5D=all", testAPIKey),
+		response: `<response>
+		<search>
+		  <results>
+			<work>
+			  <id type="integer">1</id>
+			  <books_count type="integer">2</books_count>
+			  <ratings_count type="integer">3</ratings_count>
+			  <text_reviews_count type="integer">4</text_reviews_count>
+			  <original_publication_year type="integer">2019</original_publication_year>
+			  <original_publication_month type="integer">8</original_publication_month>
+			  <original_publication_day type="integer">6</original_publication_day>
+			  <average_rating>3.59</average_rating>
+			  <best_book type="Book">
+				<id type="integer">1</id>
+				<title>book1</title>
+				<author>
+				  <id type="integer">1</id>
+				  <name>Author 1</name>
+				</author>
+				<image_url>https://image1.jpg</image_url>
+				<small_image_url>https://small_image1.jpg</small_image_url>
+			  </best_book>
+			</work>
+			<work>
+			  <id type="integer">5</id>
+			  <books_count type="integer">6</books_count>
+			  <ratings_count type="integer">7</ratings_count>
+			  <text_reviews_count type="integer">8</text_reviews_count>
+			  <original_publication_year type="integer">2018</original_publication_year>
+			  <original_publication_month type="integer" nil="true" />
+			  <original_publication_day type="integer" nil="true" />
+			  <average_rating>3.68</average_rating>
+			  <best_book type="Book">
+				<id type="integer">2</id>
+				<title>Hello: The Sequel</title>
+				<author>
+				  <id type="integer">2</id>
+				  <name>Author 2</name>
+				</author>
+				<image_url>https://image2.jpg</image_url>
+				<small_image_url>https://small_image2.jpg</small_image_url>
+			  </best_book>
+			</work>
+		  </results>
+		</search>
+	</response>`})
+	defer done()
+	books, err := c.SearchBooks("hello", 1, AllFields)
+	assert.Nil(t, err)
+	assert.Equal(t, []work.Work{
+		{
+			ID:                       1,
+			BooksCount:               2,
+			RatingsCount:             3,
+			TextReviewsCount:         4,
+			OriginalPublicationYear:  2019,
+			OriginalPublicationMonth: 8,
+			OriginalPublicationDay:   6,
+			AverageRating:            3.59,
+			BestBook: work.Book{
+				ID:    1,
+				Title: "book1",
+				Author: work.Author{
+					ID:   1,
+					Name: "Author 1",
+				},
+				ImageURL:      "https://image1.jpg",
+				SmallImageURL: "https://small_image1.jpg",
+			},
+		},
+		{
+			ID:                       5,
+			BooksCount:               6,
+			RatingsCount:             7,
+			TextReviewsCount:         8,
+			OriginalPublicationYear:  2018,
+			OriginalPublicationMonth: 0,
+			OriginalPublicationDay:   0,
+			AverageRating:            3.68,
+			BestBook: work.Book{
+				ID:    2,
+				Title: "Hello: The Sequel",
+				Author: work.Author{
+					ID:   2,
+					Name: "Author 2",
+				},
+				ImageURL:      "https://image2.jpg",
+				SmallImageURL: "https://small_image2.jpg",
+			},
+		},
+	}, books)
+}
+
 func TestClient_ShelvesList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/shelf/list.xml?key=%s&user_id=user-id", testApiKey),
+		expectURL: fmt.Sprintf("/shelf/list.xml?key=%s&user_id=user-id", testAPIKey),
 		response: `<response>
 			<shelves>
 				<user_shelf><id>shelf1</id><name>Shelf 1</name></user_shelf>
@@ -124,7 +222,7 @@ func TestClient_ShelvesList(t *testing.T) {
 
 	s, err := c.ShelvesList("user-id")
 	assert.Nil(t, err)
-	assert.Equal(t, []UserShelf{
+	assert.Equal(t, []responses.UserShelf{
 		{ID: "shelf1", Name: "Shelf 1"},
 		{ID: "shelf2", Name: "Shelf 2"},
 		{ID: "shelf3", Name: "Shelf 3"},
@@ -133,7 +231,7 @@ func TestClient_ShelvesList(t *testing.T) {
 
 func TestClient_UserShow(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/user/show/user-id.xml?key=%s", testApiKey),
+		expectURL: fmt.Sprintf("/user/show/user-id.xml?key=%s", testAPIKey),
 		response: `<response>
 			<user>
 				<id>user-id</id>
@@ -145,7 +243,7 @@ func TestClient_UserShow(t *testing.T) {
 
 	u, err := c.UserShow("user-id")
 	assert.Nil(t, err)
-	assert.Equal(t, User{
+	assert.Equal(t, responses.User{
 		ID:   "user-id",
 		Name: "User Name",
 	}, *u)
@@ -163,10 +261,10 @@ func newTestClient(t *testing.T, tc decodeTestCase) (*Client, func()) {
 	}))
 
 	return &Client{
-		ApiKey: testApiKey,
-		httpClient: &HTTPClient{
+		APIKey: testAPIKey,
+		httpClient: &httpClient{
 			Client:  http.DefaultClient,
-			ApiRoot: s.URL,
+			APIRoot: s.URL,
 			Verbose: true,
 		},
 	}, s.Close
