@@ -159,48 +159,48 @@ func TestClient_SearchBooks(t *testing.T) {
 			</work>
 		  </results>
 		</search>
-	</response>`,})
+	</response>`})
 	defer done()
 	books, err := c.SearchBooks("hello", 1, AllFields)
 	assert.Nil(t, err)
 	assert.Equal(t, []work.Work{
 		{
-			ID: 1,
-			BooksCount: 2,
-			RatingsCount: 3,
-			TextReviewsCount: 4,
-			OriginalPublicationYear: 2019,
+			ID:                       1,
+			BooksCount:               2,
+			RatingsCount:             3,
+			TextReviewsCount:         4,
+			OriginalPublicationYear:  2019,
 			OriginalPublicationMonth: 8,
-			OriginalPublicationDay: 6,
-			AverageRating: 3.59,
+			OriginalPublicationDay:   6,
+			AverageRating:            3.59,
 			BestBook: work.Book{
-				ID: 1,
+				ID:    1,
 				Title: "book1",
 				Author: work.Author{
 					ID:   1,
 					Name: "Author 1",
 				},
-				ImageURL: "https://image1.jpg",
+				ImageURL:      "https://image1.jpg",
 				SmallImageURL: "https://small_image1.jpg",
 			},
 		},
 		{
-			ID: 5,
-			BooksCount: 6,
-			RatingsCount: 7,
-			TextReviewsCount: 8,
-			OriginalPublicationYear: 2018,
+			ID:                       5,
+			BooksCount:               6,
+			RatingsCount:             7,
+			TextReviewsCount:         8,
+			OriginalPublicationYear:  2018,
 			OriginalPublicationMonth: 0,
-			OriginalPublicationDay: 0,
-			AverageRating: 3.68,
+			OriginalPublicationDay:   0,
+			AverageRating:            3.68,
 			BestBook: work.Book{
-				ID: 2,
+				ID:    2,
 				Title: "Hello: The Sequel",
 				Author: work.Author{
-					ID: 2,
+					ID:   2,
 					Name: "Author 2",
 				},
-				ImageURL: "https://image2.jpg",
+				ImageURL:      "https://image2.jpg",
 				SmallImageURL: "https://small_image2.jpg",
 			},
 		},

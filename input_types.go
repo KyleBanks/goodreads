@@ -9,8 +9,8 @@ const (
 	AuthorField SearchField = "author"
 
 	// TitleField lets you specify that you want to only search through book titles.
-	TitleField  SearchField = "title"
+	TitleField SearchField = "title"
 
 	// AllFields (the default) lets you search over everything.
-	AllFields   SearchField = "all"
+	AllFields SearchField = "all"
 )
