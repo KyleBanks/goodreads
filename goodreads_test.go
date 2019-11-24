@@ -135,26 +135,26 @@ func TestClient_SearchBooks(t *testing.T) {
 				<small_image_url>https://small_image1.jpg</small_image_url>
 			  </best_book>
 			</work>
-			<work>
-			  <id type="integer">5</id>
-			  <books_count type="integer">6</books_count>
-			  <ratings_count type="integer">7</ratings_count>
-			  <text_reviews_count type="integer">8</text_reviews_count>
-			  <original_publication_year type="integer">2018</original_publication_year>
-			  <original_publication_month type="integer" nil="true" />
-			  <original_publication_day type="integer" nil="true" />
-			  <average_rating>3.68</average_rating>
-			  <best_book type="Book">
-				<id type="integer">2</id>
-				<title>Hello The Sequel</title>
-				<author>
-				  <id type="integer">2</id>
-				  <name>Author 2</name>
-				</author>
-				<image_url>https://image2.jpg</image_url>
-				<small_image_url>https://small_image2.jpg</small_image_url>
-			  </best_book>
-			</work>
+<!--			<work>-->
+<!--			  <id type="integer">5</id>-->
+<!--			  <books_count type="integer">6</books_count>-->
+<!--			  <ratings_count type="integer">7</ratings_count>-->
+<!--			  <text_reviews_count type="integer">8</text_reviews_count>-->
+<!--			  <original_publication_year type="integer">2018</original_publication_year>-->
+<!--			  <original_publication_month type="integer" nil="true" />-->
+<!--			  <original_publication_day type="integer" nil="true" />-->
+<!--			  <average_rating>3.68</average_rating>-->
+<!--			  <best_book type="Book">-->
+<!--				<id type="integer">2</id>-->
+<!--				<title>Hello The Sequel</title>-->
+<!--				<author>-->
+<!--				  <id type="integer">2</id>-->
+<!--				  <name>Author 2</name>-->
+<!--				</author>-->
+<!--				<image_url>https://image2.jpg</image_url>-->
+<!--				<small_image_url>https://small_image2.jpg</small_image_url>-->
+<!--			  </best_book>-->
+<!--			</work>-->
 		  </results>
 		</search>
 	</response>`,})
@@ -164,12 +164,26 @@ func TestClient_SearchBooks(t *testing.T) {
 	assert.Equal(t, []Work{
 		{
 			ID: 1,
-			BestBook: WorkBook{ID: 1,},
+			BooksCount: 2,
+			RatingsCount: 3,
+			OriginalPublicationYear: 2019,
+			OriginalPublicationMonth: 8,
+			OriginalPublicationDay: 6,
+			AverageRating: 3.59,
+			BestBook: WorkBook{
+				ID: 1,
+				Author: WorkBookAuthor{
+					ID:   1,
+					Name: "Author 1",
+				},
+				ImageURL: "https://image1.jpg",
+				SmallImageURL: "https://small_image1.jpg",
+			},
 		},
-		{
-			ID: 2,
-			BestBook: WorkBook{ID: 2,},
-		},
+		//{
+		//	ID: 2,
+		//	BestBook: WorkBook{ID: 2,},
+		//},
 	}, books)
 }
 

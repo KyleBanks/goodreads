@@ -1,14 +1,14 @@
 package goodreads
 
 type Author struct {
-	ID               string  `xml:"id"`
-	Name             string  `xml:"name"`
-	ImageURL         string  `xml:"image_url"`
-	SmallImageURL    string  `xml:"small_image_url"`
-	LargeImageURL    string  `xml:"large_image_url"`
-	Link             string  `xml:"link"`
-	AverageRating    float32 `xml:"average_rating"`
-	RatingsCount     int     `xml:"ratings_count"`
+	ID               string       `xml:"id"`
+	Name             string       `xml:"name"`
+	ImageURL         string       `xml:"image_url"`
+	SmallImageURL    string       `xml:"small_image_url"`
+	LargeImageURL    string       `xml:"large_image_url"`
+	Link             string       `xml:"link"`
+	AverageRating    float32      `xml:"average_rating"`
+	RatingsCount     int          `xml:"ratings_count"`
 	TextReviewsCount int          `xml:"text_reviews_count"`
 	FansCount        int          `xml:"fans_count"`
 	AuthorFollowers  int          `xml:"author_followers"`
@@ -102,26 +102,26 @@ type UserShelf struct {
 }
 
 type Work struct {
-	ID int
-	BooksCount int
-	RatingsCount int
-	TextReviewsCount int
-	OriginalPublicationYear int
+	ID                       int `xml:"id"`
+	BooksCount               int
+	RatingsCount             int
+	TextReviewsCount         int
+	OriginalPublicationYear  int
 	OriginalPublicationMonth int
-	OriginalPublicationDay int
-	AverageRating float64
-	BestBook WorkBook
+	OriginalPublicationDay   int
+	AverageRating            float64
+	BestBook                 WorkBook
 }
 
 type WorkBook struct {
-	ID int
-	Title int
-	Author WorkBookAuthor
-	ImageURL string
+	ID            int
+	Title         int
+	Author        WorkBookAuthor
+	ImageURL      string
 	SmallImageURL string
 }
 
 type WorkBookAuthor struct {
-	ID int
+	ID   int
 	Name string
 }
