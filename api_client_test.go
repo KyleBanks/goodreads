@@ -36,7 +36,7 @@ func TestHttpClient_Get(t *testing.T) {
 			var res struct {
 				ID string `xml:"id" json:"id"`
 			}
-			h := HTTPClient{Client: http.DefaultClient, ApiRoot: s.URL, Verbose: true}
+			h := httpClient{Client: http.DefaultClient, APIRoot: s.URL, Verbose: true}
 			err := h.Get("foo/bar", tc.Decoder, v, &res)
 			assert.Nil(t, err)
 			assert.Equal(t, "SampleID", res.ID)

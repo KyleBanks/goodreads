@@ -16,15 +16,15 @@ import (
 
 // Client wraps the public Goodreads API.
 type Client struct {
-	ApiKey     string
+	APIKey     string
 	httpClient APIClient
 }
 
 // NewClient initializes a Client with default parameters.
 func NewClient(key string) *Client {
 	return &Client{
-		ApiKey:     key,
-		httpClient: DefaultAPIClient,
+		APIKey:     key,
+		httpClient: defaultAPIClient,
 	}
 }
 
@@ -161,6 +161,6 @@ func (c *Client) UserShow(id string) (*responses.User, error) {
 
 func (c *Client) defaultValues() url.Values {
 	v := url.Values{}
-	v.Set("key", c.ApiKey)
+	v.Set("key", c.APIKey)
 	return v
 }

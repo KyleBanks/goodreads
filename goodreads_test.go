@@ -11,18 +11,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const testApiKey = "test-api-key"
+const testAPIKey = "test-api-key"
 
 func TestNewClient(t *testing.T) {
 	c := NewClient("api-key")
 	assert.NotNil(t, c)
-	assert.Equal(t, "api-key", c.ApiKey)
-	assert.Equal(t, DefaultAPIClient, c.httpClient)
+	assert.Equal(t, "api-key", c.APIKey)
+	assert.Equal(t, defaultAPIClient, c.httpClient)
 }
 
 func TestClient_AuthorBooks(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/author/list/12345?key=%s&page=1", testApiKey),
+		expectURL: fmt.Sprintf("/author/list/12345?key=%s&page=1", testAPIKey),
 		response:  `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
 	})
 	defer done()
@@ -37,7 +37,7 @@ func TestClient_AuthorBooks(t *testing.T) {
 
 func TestClient_AuthorShow(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/author/show/12345?key=%s", testApiKey),
+		expectURL: fmt.Sprintf("/author/show/12345?key=%s", testAPIKey),
 		response:  `<response><author><id>AuthorID</id><name>AuthorName</name></author></response>`,
 	})
 	defer done()
@@ -53,7 +53,7 @@ func TestClient_AuthorShow(t *testing.T) {
 func TestClient_BookReviewCounts(t *testing.T) {
 	isbn := "9781400078776"
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/book/review_counts.json?isbns=%s&key=%s", isbn, testApiKey),
+		expectURL: fmt.Sprintf("/book/review_counts.json?isbns=%s&key=%s", isbn, testAPIKey),
 		response: `{
 			"books": [{
 				"average_rating": "3.82",
@@ -91,7 +91,7 @@ func TestClient_BookReviewCounts(t *testing.T) {
 
 func TestClient_ReviewList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/review/list/user-id.xml?key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testApiKey),
+		expectURL: fmt.Sprintf("/review/list/user-id.xml?key=%s&order=d&page=1&per_page=200&search=search&shelf=read&sort=date_read&v=2", testAPIKey),
 		response: `<response>
 			<reviews>
 				<review><id>review1</id><rating>1</rating></review>
@@ -113,7 +113,7 @@ func TestClient_ReviewList(t *testing.T) {
 
 func TestClient_SearchBooks(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/search/index.xml?key=%s&page=1&q=hello&search%%5Bfield%%5D=all", testApiKey),
+		expectURL: fmt.Sprintf("/search/index.xml?key=%s&page=1&q=hello&search%%5Bfield%%5D=all", testAPIKey),
 		response: `<response>
 		<search>
 		  <results>
@@ -209,7 +209,7 @@ func TestClient_SearchBooks(t *testing.T) {
 
 func TestClient_ShelvesList(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/shelf/list.xml?key=%s&user_id=user-id", testApiKey),
+		expectURL: fmt.Sprintf("/shelf/list.xml?key=%s&user_id=user-id", testAPIKey),
 		response: `<response>
 			<shelves>
 				<user_shelf><id>shelf1</id><name>Shelf 1</name></user_shelf>
@@ -231,7 +231,7 @@ func TestClient_ShelvesList(t *testing.T) {
 
 func TestClient_UserShow(t *testing.T) {
 	c, done := newTestClient(t, decodeTestCase{
-		expectURL: fmt.Sprintf("/user/show/user-id.xml?key=%s", testApiKey),
+		expectURL: fmt.Sprintf("/user/show/user-id.xml?key=%s", testAPIKey),
 		response: `<response>
 			<user>
 				<id>user-id</id>
@@ -261,10 +261,10 @@ func newTestClient(t *testing.T, tc decodeTestCase) (*Client, func()) {
 	}))
 
 	return &Client{
-		ApiKey: testApiKey,
-		httpClient: &HTTPClient{
+		APIKey: testAPIKey,
+		httpClient: &httpClient{
 			Client:  http.DefaultClient,
-			ApiRoot: s.URL,
+			APIRoot: s.URL,
 			Verbose: true,
 		},
 	}, s.Close
