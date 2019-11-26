@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/KyleBanks/goodreads/responses"
 	"github.com/KyleBanks/goodreads/responses/work"
+	"github.com/KyleBanks/goodreads/responses/series"
 	"net/url"
 	"strconv"
 	"strings"
@@ -129,6 +130,24 @@ func (c *Client) SearchBooks(query string, page int, field SearchField) ([]work.
 	}
 
 	return r.Works, nil
+}
+
+// SeriesShow returns the list of books which belong to a series
+// https://www.goodreads.com/series/show/ID.xml
+func (c *Client) SeriesShow(seriesID string) (*series.Series, error) {
+	v := c.defaultValues()
+	v.Set("id", seriesID)
+
+	var r struct {
+		Series series.Series `xml:"series"`
+	}
+
+	err := c.httpClient.Get(fmt.Sprintf("series/show/%s.xml", seriesID), xml.Unmarshal, v, &r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &r.Series, nil
 }
 
 // ShelvesList returns the list of shelves belonging to a user.
