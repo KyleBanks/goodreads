@@ -45,7 +45,7 @@ $ go doc github.com/KyleBanks/goodreads Client
 
 ## Examples
 
-Example code is available in the [examples/](./examples) directory.
+Example code is available in the [example/](./example) directory.
 
 After you've obtained a Goodreads API Key, you can run the examples like so:
 
